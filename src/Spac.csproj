@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <!-- .NET Framework 4.8 je součástí Windows 10/11, takže Spac.exe nepotřebuje nic doinstalovat. -->
+    <TargetFramework>net48</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+
+    <AssemblyName>Spac</AssemblyName>
+    <RootNamespace>Spac</RootNamespace>
+    <ApplicationIcon>..\assets\spac.ico</ApplicationIcon>
+
+    <Version>1.0.0</Version>
+    <Product>Spáč</Product>
+    <AssemblyTitle>Spáč</AssemblyTitle>
+    <Description>Časovač vypnutí pro Windows</Description>
+    <Copyright>© 2026 Jan Pavlat</Copyright>
+
+    <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
+    <GenerateSupportedRuntime>false</GenerateSupportedRuntime>
+    <DebugType Condition="'$(Configuration)' == 'Release'">none</DebugType>
+  </PropertyGroup>
+
+</Project>
