@@ -17,24 +17,32 @@
 Pustíš si film, nastavíš 1,5 hodiny a jdeš spát. Spáč zavolá `shutdown` se správnými přepínači a ukáže ti,
 co přesně spouští.
 
-- **Jeden soubor, 53 kB.** Žádná instalace, žádné závislosti, žádné procesy na pozadí.
+- **Nic se neinstaluje ani nekompiluje.** Jeden skript v PowerShellu a jedno okno v XAML. Všechno, co
+  potřebuje, už ve Windows je.
 - **Čtyři akce:** vypnout, restartovat, hibernovat, odhlásit.
 - **Čas na dvě kliknutí:** předvolby od 15 minut do 3 hodin, nebo vlastní hodnota až 23 h 59 min.
 - **Vidíš, co se stane:** přesný příkaz i čas, kdy na něj dojde.
-- **Jde to vzít zpět:** tlačítko Zrušit funguje i po zavření a znovuotevření aplikace.
+- **Jde to vzít zpět:** odpočet zrušíš i po zavření a znovuotevření aplikace. Tlačítko
+  **Zrušit naplánované vypnutí** navíc zruší i to, co Spáč nenastavil.
 
-## Stažení
+## Instalace
 
-1. Stáhni `Spac.exe` z [posledního vydání](https://github.com/JohnyLeeJohnes/spac/releases/latest).
-2. Ulož ho, kam chceš, a spusť.
+```
+git clone https://github.com/JohnyLeeJohnes/spac.git
+```
 
-Stačí Windows 10 nebo 11. Aplikace běží na .NET Frameworku 4.8, který je součástí systému.
+Ve složce `spac` pak poklepej na **`install.cmd`**. V nabídce Start a na ploše se objeví zástupce **Spáč**
+s ikonou a aplikace se spouští jako každá jiná, bez okna konzole.
 
-> Soubor není digitálně podepsaný, takže Windows SmartScreen může při prvním spuštění zobrazit varování.
-> Pokračuje se přes **Další informace → Přesto spustit**. Kdo nechce věřit cizímu `.exe`, může si ho
-> [sestavit sám](#sestavení-ze-zdrojáků).
+- **Jen vyzkoušet:** poklepej na `Spac.cmd`, spustí Spáče bez vytváření zástupců.
+- **Přesunutí složky:** zástupce ukazuje tam, kde Spáč leží. Po přesunutí spusť `install.cmd` znovu.
+- **Odebrání:** smaž oba zástupce a složku. Nic dalšího Spáč v systému nenechává.
 
-Tip: pravým tlačítkem na `Spac.exe` → **Připnout na hlavní panel** a máš ho na jedno kliknutí.
+Potřebuješ Windows 10 nebo 11 (Windows PowerShell 5.1 je jejich součástí). Vyzkoušeno na Windows 11.
+
+> **Stahuješ ZIP místo `git clone`?** Windows si soubory stažené z internetu označí a skripty s tímhle
+> označením nemusí spustit. Před rozbalením proto klikni na ZIP pravým tlačítkem a zvol
+> **Vlastnosti → Odblokovat**. Klonování přes git tohle označení nepřidává.
 
 ## Co který přepínač dělá
 
@@ -47,7 +55,8 @@ Tip: pravým tlačítkem na `Spac.exe` → **Připnout na hlavní panel** a má�
 | Vynutit zavření aplikací | `/f` | Aplikace se zavřou bez ptaní, neuložená práce se ztratí. |
 | Rychlé spuštění | `/hybrid` | Jen s `/s`. Hybridní vypnutí jako u položky Vypnout v nabídce Start. |
 | Po startu znovu otevřít aplikace | `/sg` místo `/s`, `/g` místo `/r` | Windows po přihlášení obnoví aplikace, které to podporují. |
-| Zrušit | `shutdown /a` | |
+| Zrušit (u běžícího odpočtu) | `shutdown /a` | |
+| Zrušit naplánované vypnutí | `shutdown /a` | Zruší jakékoli naplánované vypnutí nebo restart, i to z příkazové řádky. |
 
 ## Dobré vědět
 
@@ -63,6 +72,8 @@ Tip: pravým tlačítkem na `Spac.exe` → **Připnout na hlavní panel** a má�
   Spáč ho zruší a nastaví to svoje.
 - **Režim spánku tu není.** `shutdown.exe` ho neumí a Spáč záměrně nedělá nic, co by nešlo napsat do
   příkazové řádky.
+- **Proč skript, a ne `.exe`.** Nepodepsaný `.exe` umí Windows 11 (Smart App Control) zablokovat. Skript
+  běží bez podpisu a před spuštěním si ho můžeš celý přečíst.
 
 Naplánované vypnutí jde vždy zrušit i bez aplikace:
 
@@ -72,30 +83,27 @@ shutdown /a
 
 Spáč si ukládá jediný soubor, `%LOCALAPPDATA%\Spac\pending`, a to jen po dobu běžícího odpočtu.
 
-## Sestavení ze zdrojáků
-
-Potřebuješ jen [.NET SDK](https://dotnet.microsoft.com/download) (ověřeno s verzí 10).
-
-```
-git clone https://github.com/JohnyLeeJohnes/spac.git
-cd spac
-dotnet build src -c Release -o dist
-```
-
-Výsledek je `dist\Spac.exe`.
-
-### Kde co je
+## Úpravy
 
 | Soubor | Obsah |
 | --- | --- |
-| `src/Shutdown.cs` | Skládání přepínačů, volání `shutdown.exe`, uložený stav odpočtu. |
-| `src/MainWindow.xaml` | Rozložení okna. |
-| `src/MainWindow.xaml.cs` | Chování okna: formulář, odpočet, tmavý titulkový pruh. |
-| `src/App.xaml` | Barvy a styly ovládacích prvků. |
+| `Spac.ps1` | Chování: skládání přepínačů, volání `shutdown.exe`, odpočet, vytvoření zástupců. |
+| `Spac.xaml` | Vzhled okna: barvy, styly, rozložení. |
+| `Spac.cmd`, `install.cmd` | Spuštění bez instalace a vytvoření zástupců. |
 | `tools/make-icon.ps1` | Vygeneruje ikonu do `assets/`. |
+| `tests/e2e.ps1` | Test, který aplikaci proklikne přes UI Automation. |
 
-Chceš jiné barvy? Celá paleta je na začátku `src/App.xaml`. Jiné předvolby času? Řádek s `Presets`
-v `src/MainWindow.xaml`, hodnota `Tag` je počet minut.
+Chceš jiné barvy? Celá paleta je na začátku `Spac.xaml`. Jiné předvolby času? Řádek s `Presets` tamtéž,
+hodnota `Tag` je počet minut. Změny se projeví při dalším spuštění, nic se nesestavuje.
+
+Test se pouští takhle:
+
+```
+powershell -ExecutionPolicy Bypass -File tests/e2e.ps1
+```
+
+Pozor, opravdu plánuje vypnutí (na hodiny dopředu) a hned ho ruší. Na konci vždy zavolá `shutdown /a`,
+takže zruší i vypnutí, které sis naplánoval sám. Hibernaci ani odhlášení nikdy nespustí.
 
 ## Přispívání
 
@@ -109,5 +117,5 @@ Forkuj, upravuj, posílej pull requesty. Změny se zapisují do [CHANGELOG.md](C
 
 **In English:** Spáč ("the sleeper") is a tiny shutdown timer for Windows 10/11, a friendly UI on top of
 `shutdown.exe`. Pick an action (shut down, restart, hibernate, log off), pick a delay, and it runs the
-matching command and shows you exactly which one. Single 53 kB executable, no installer, no dependencies.
-The interface is in Czech.
+matching command and shows you exactly which one. It is a PowerShell script with a WPF window: clone the
+repo and run `install.cmd` to get a shortcut, nothing to compile or install. The interface is in Czech.

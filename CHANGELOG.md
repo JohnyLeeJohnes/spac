@@ -16,9 +16,14 @@ První vydání.
   po startu (`/sg`, `/g`).
 - Náhled přesného příkazu, který se spustí, a času, kdy k akci dojde.
 - Obrazovka s odpočtem a tlačítkem Zrušit (`shutdown /a`).
+- Tlačítko **Zrušit naplánované vypnutí** (`shutdown /a`) přímo ve formuláři. Zruší i vypnutí, které
+  Spáč nenastavil.
 - Odpočet vypnutí a restartu přežije zavření aplikace, po znovuotevření ho jde zrušit.
 - Vlastní odpočet pro hibernaci a odhlášení, u kterých `shutdown.exe` přepínač `/t` nepodporuje.
 - Hibernace se nenabízí, pokud je v systému vypnutá.
 - Tmavý vzhled včetně titulkového pruhu okna.
+- Ikona ve velikostech 16 až 256 px a `install.cmd`, který vytvoří zástupce v nabídce Start a na ploše.
+- Spáč je skript v PowerShellu s oknem ve WPF, takže se nic nekompiluje ani neinstaluje a nevadí mu
+  Smart App Control.
 
 [1.0.0]: https://github.com/JohnyLeeJohnes/spac/releases/tag/v1.0.0
