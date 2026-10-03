@@ -3,6 +3,12 @@
 Všechny podstatné změny v projektu. Formát vychází z [Keep a Changelog](https://keepachangelog.com/cs/1.1.0/),
 verze se řídí [sémantickým verzováním](https://semver.org/lang/cs/).
 
+## [Nevydáno]
+
+### Změněno
+
+- `install.cmd` vytvoří zástupce s ikonou i přímo ve složce se Spáčem, nejen v nabídce Start a na ploše.
+
 ## [1.0.0] - 2026-10-03
 
 První vydání.
@@ -26,4 +32,5 @@ První vydání.
 - Spáč je skript v PowerShellu s oknem ve WPF, takže se nic nekompiluje ani neinstaluje a nevadí mu
   Smart App Control.
 
+[Nevydáno]: https://github.com/JohnyLeeJohnes/spac/compare/v1.0.0...master
 [1.0.0]: https://github.com/JohnyLeeJohnes/spac/releases/tag/v1.0.0

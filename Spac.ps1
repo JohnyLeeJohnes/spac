@@ -1,6 +1,6 @@
 ﻿# Spáč: naplánuje vypnutí počítače přes shutdown.exe. Okno je popsané ve Spac.xaml.
 #   Spac.ps1             spustí aplikaci
-#   Spac.ps1 -Install    vytvoří zástupce s ikonou v nabídce Start a na ploše
+#   Spac.ps1 -Install    vytvoří zástupce s ikonou v nabídce Start, na ploše a ve složce se Spáčem
 param([switch]$Install)
 
 $ErrorActionPreference = 'Stop'
@@ -8,8 +8,8 @@ $icon = Join-Path $PSScriptRoot 'assets\spac.ico'
 
 if ($Install) {
     $shell = New-Object -ComObject WScript.Shell
-    foreach ($folder in 'Programs', 'DesktopDirectory') {
-        $directory = [Environment]::GetFolderPath($folder)
+    # Nabídka Start, plocha a složka se Spáčem (ať je i tam na co kliknout).
+    foreach ($directory in [Environment]::GetFolderPath('Programs'), [Environment]::GetFolderPath('DesktopDirectory'), $PSScriptRoot) {
         # WScript.Shell ukládá texty v kódové stránce systému a "č" v ní být nemusí.
         # Proto se zástupce uloží jako Spac.lnk a přejmenuje až potom, a popisek se "č" vyhýbá.
         $plain = Join-Path $directory 'Spac.lnk'
@@ -27,7 +27,7 @@ if ($Install) {
         }
         Move-Item $plain (Join-Path $directory 'Spáč.lnk') -Force
     }
-    'Hotovo. Zástupce Spáč je v nabídce Start a na ploše.'
+    'Hotovo. Zástupce Spáč je v nabídce Start, na ploše a v téhle složce.'
     return
 }
 

@@ -31,12 +31,15 @@ co přesně spouští.
 git clone https://github.com/JohnyLeeJohnes/spac.git
 ```
 
-Ve složce `spac` pak poklepej na **`install.cmd`**. V nabídce Start a na ploše se objeví zástupce **Spáč**
-s ikonou a aplikace se spouští jako každá jiná, bez okna konzole.
+Ve složce `spac` pak poklepej na **`install.cmd`**. Vytvoří zástupce **Spáč** s ikonou v nabídce Start,
+na ploše a přímo ve složce. Přes něj se aplikace spouští jako každá jiná, bez okna konzole.
 
 - **Jen vyzkoušet:** poklepej na `Spac.cmd`, spustí Spáče bez vytváření zástupců.
 - **Přesunutí složky:** zástupce ukazuje tam, kde Spáč leží. Po přesunutí spusť `install.cmd` znovu.
-- **Odebrání:** smaž oba zástupce a složku. Nic dalšího Spáč v systému nenechává.
+- **Odebrání:** smaž zástupce z plochy a z nabídky Start a pak celou složku. Nic dalšího Spáč v systému
+  nenechává.
+- **Proč zástupce není rovnou v repu:** zástupce si pamatuje celou cestu k ikoně i ke skriptu, takže
+  musí vzniknout až na tvém počítači.
 
 Potřebuješ Windows 10 nebo 11 (Windows PowerShell 5.1 je jejich součástí). Vyzkoušeno na Windows 11.
 

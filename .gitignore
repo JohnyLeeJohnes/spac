@@ -1,2 +1,4 @@
 .vs/
 .idea/
+# Zástupce vytváří install.cmd, obsahuje cesty platné jen na jednom počítači.
+*.lnk
