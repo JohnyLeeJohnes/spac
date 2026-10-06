@@ -434,6 +434,16 @@
                     <Run Style="{StaticResource Flag}" Text="/a"/>
                 </TextBlock>
             </Button>
+
+            <!-- Jen když Spáče pustila Bránocesta; ukazuje ho Spac.ps1. -->
+            <Button x:Name="GatewayButton" Style="{StaticResource QuietButton}" Margin="0,8,0,0" Visibility="Collapsed"
+                    HorizontalAlignment="Center" ToolTip="Zavře Spáče a otevře Bránocestu."
+                    AutomationProperties.Name="Zpět na Bránocestu">
+                <TextBlock>
+                    <Run FontFamily="Segoe MDL2 Assets" FontSize="9" Text="&#xE72B;"/>
+                    <Run Text=" Bránocesta"/>
+                </TextBlock>
+            </Button>
         </StackPanel>
 
         <!-- Běžící odpočet -->

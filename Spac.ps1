@@ -31,7 +31,7 @@ if ($Install) {
     return
 }
 
-Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase
+Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase, Microsoft.VisualBasic
 
 # Dvě volání Windows API. Když se Add-Type nepovede (třeba kvůli zásadám počítače), Spáč běží dál,
 # jen má světlý titulek a nepozná, že je hibernace vypnutá.
@@ -267,8 +267,44 @@ try {
     $ui = @{}
     'FormView', 'ShutdownTile', 'RestartTile', 'HibernateTile', 'LogOffTile', 'HoursBox', 'MinutesBox', 'Presets',
     'WhenText', 'ForceToggle', 'HybridToggle', 'RestoreToggle', 'RestoreFlag', 'CommandText', 'StartButton',
-    'StatusText', 'AbortButton', 'RunView', 'RunTitle', 'CountdownText', 'RunWhen', 'BarLeft', 'BarGone',
+    'StatusText', 'AbortButton', 'GatewayButton', 'RunView', 'RunTitle', 'CountdownText', 'RunWhen', 'BarLeft', 'BarGone',
     'RunCommand', 'CancelButton', 'RunStatus' | ForEach-Object { $ui[$_] = $window.FindName($_) }
+
+    # Když Spáče pustila Bránocesta, nechala v $env:BRANOCESTA cestu ke svému skriptu. Tlačítko ji otevře
+    # a Spáče zavře. Při spuštění vlastním zástupcem proměnná není a tlačítko zůstane schované.
+    $gateway = $env:BRANOCESTA
+    if ($gateway -and (Split-Path $gateway -Leaf) -eq 'Branocesta.ps1' -and (Test-Path -LiteralPath $gateway)) {
+        # Spáč se zavře, až když se okno brány ukáže, a pošle ho dopředu. Kdyby se zavřel hned, Windows by
+        # mezitím aktivovaly jiné okno a brána by se otevřela za ním. $handoff.Tag drží čas kliknutí.
+        $handoff = [Windows.Threading.DispatcherTimer]::new()
+        $handoff.Interval = [TimeSpan]::FromMilliseconds(150)
+        $handoff.Add_Tick({
+            $shown = $null
+            foreach ($process in [Diagnostics.Process]::GetProcessesByName('powershell')) {
+                try {
+                    if ($process.Id -ne $PID -and $process.StartTime -ge $handoff.Tag -and
+                        $process.MainWindowHandle -ne [IntPtr]::Zero) { $shown = $process.Id }
+                }
+                catch { }   # Proces mezitím skončil nebo k němu není přístup.
+                finally { $process.Dispose() }
+            }
+            if (-not $shown -and [DateTime]::Now -lt $handoff.Tag.AddSeconds(20)) { return }
+            $handoff.Stop()
+            # Když se brána neukázala, Spáč zůstane otevřený, ať člověk neskončí bez okna.
+            if (-not $shown) { return }
+            try { [Microsoft.VisualBasic.Interaction]::AppActivate($shown) } catch { }
+            $window.Close()
+        })
+        $ui.GatewayButton.Visibility = 'Visible'
+        $ui.GatewayButton.Add_Click({
+            if ($handoff.IsEnabled) { return }
+            $handoff.Tag = [DateTime]::Now
+            # conhost --headless spustí PowerShell bez okna konzole, stejně jako zástupce.
+            Start-Process -FilePath "$env:SystemRoot\System32\conhost.exe" -WorkingDirectory (Split-Path $gateway) `
+                -ArgumentList "--headless powershell.exe -NoProfile -ExecutionPolicy Bypass -File `"$gateway`""
+            $handoff.Start()
+        })
+    }
 
     if ($native -and -not $native::IsPwrHibernateAllowed()) {
         $ui.HibernateTile.IsEnabled = $false
