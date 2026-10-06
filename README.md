@@ -106,24 +106,14 @@ Spáč si ukládá jediný soubor, `%LOCALAPPDATA%\Spac\pending`, a to jen po do
 | `Spac.xaml` | Vzhled okna: barvy, styly, rozložení. |
 | `Spac.cmd`, `install.cmd` | Spuštění bez instalace a vytvoření zástupců. |
 | `install.ps1` | Instalace jedním příkazem: stáhne Spáče do `%LOCALAPPDATA%\Spac` a vytvoří zástupce. |
-| `tools/make-icon.ps1` | Vygeneruje ikonu do `assets/`. |
-| `tests/e2e.ps1` | Test, který aplikaci proklikne přes UI Automation. |
 
 Chceš jiné barvy? Celá paleta je na začátku `Spac.xaml`. Jiné předvolby času? Řádek s `Presets` tamtéž,
 hodnota `Tag` je počet minut. Změny se projeví při dalším spuštění, nic se nesestavuje.
 
-Test se pouští takhle:
-
-```
-powershell -ExecutionPolicy Bypass -File tests/e2e.ps1
-```
-
-Pozor, opravdu plánuje vypnutí (na hodiny dopředu) a hned ho ruší. Na konci vždy zavolá `shutdown /a`,
-takže zruší i vypnutí, které sis naplánoval sám. Hibernaci ani odhlášení nikdy nespustí.
-
 ## Přispívání
 
-Forkuj, upravuj, posílej pull requesty. Změny se zapisují do [CHANGELOG.md](CHANGELOG.md).
+Forkuj, upravuj, posílej pull requesty. Přehled změn je v
+[Releases](https://github.com/JohnyLeeJohnes/spac/releases).
 
 ## Licence
 
