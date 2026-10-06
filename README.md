@@ -37,13 +37,15 @@ Stáhne Spáče do `%LOCALAPPDATA%\Spac`, vytvoří zástupce **Spáč** s ikono
 a rovnou ho otevře. Stejným příkazem později stáhneš aktuální verzi. Co přesně příkaz udělá, si můžeš
 předem přečíst v [install.ps1](install.ps1).
 
-Chceš Spáče mít ve vlastní složce nebo ho upravovat? Naklonuj si repo:
+Chceš Spáče mít ve vlastní složce? Stáhni si
+[Spac.zip](https://github.com/JohnyLeeJohnes/spac/releases/latest/download/Spac.zip) z posledního vydání
+a rozbal ho, kam chceš. Chceš ho i upravovat? Naklonuj si repo:
 
 ```
 git clone https://github.com/JohnyLeeJohnes/spac.git
 ```
 
-Ve složce `spac` pak poklepej na **`install.cmd`**. Vytvoří zástupce **Spáč** s ikonou v nabídce Start,
+Ve složce se Spáčem pak poklepej na **`install.cmd`**. Vytvoří zástupce **Spáč** s ikonou v nabídce Start,
 na ploše a přímo ve složce. Přes něj se aplikace spouští jako každá jiná, bez okna konzole.
 
 - **Jen vyzkoušet:** poklepej na `Spac.cmd`, spustí Spáče bez vytváření zástupců.
@@ -124,5 +126,6 @@ Forkuj, upravuj, posílej pull requesty. Přehled změn je v
 **In English:** Spáč ("the sleeper") is a tiny shutdown timer for Windows 10/11, a friendly UI on top of
 `shutdown.exe`. Pick an action (shut down, restart, hibernate, log off), pick a delay, and it runs the
 matching command and shows you exactly which one. It is a PowerShell script with a WPF window: run the
-one-line installer above, or clone the repo and run `install.cmd` to get a shortcut. Nothing to compile.
-The interface is in Czech.
+one-line installer above, or download
+[Spac.zip](https://github.com/JohnyLeeJohnes/spac/releases/latest/download/Spac.zip) (or clone the repo)
+and run `install.cmd` to get a shortcut. Nothing to compile. The interface is in Czech.
