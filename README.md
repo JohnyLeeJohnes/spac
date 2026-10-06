@@ -38,6 +38,8 @@ Ve složce se Spáčem pak poklepej na **`install.cmd`**. Vytvoří zástupce **
 na ploše a přímo ve složce. Přes něj se aplikace spouští jako každá jiná, bez okna konzole.
 
 - **Jen vyzkoušet:** poklepej na `Spac.cmd`, spustí Spáče bez vytváření zástupců.
+- **S Bránocestou:** Spáče umí nainstalovat a spouštět i [Bránocesta](https://github.com/JohnyLeeJohnes/branocesta).
+  Když ho pustíš z ní, má dole tlačítko **Bránocesta**, které ho zavře a bránu znovu otevře.
 - **Nová verze:** rozbal nový `Spac.zip` do stejné složky a nech přepsat soubory. V klonu stačí `git pull`.
 - **Přesunutí složky:** zástupce ukazuje tam, kde Spáč leží. Po přesunutí spusť `install.cmd` znovu.
 - **Odebrání:** smaž zástupce z plochy a z nabídky Start a pak celou složku se Spáčem (dřívější instalace
