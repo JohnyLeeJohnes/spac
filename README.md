@@ -27,19 +27,8 @@ co přesně spouští.
 
 ## Instalace
 
-Nejrychleji jedním příkazem. Vlož ho do PowerShellu nebo do okna Spustit (<kbd>Win</kbd>+<kbd>R</kbd>):
-
-```
-powershell -c "irm https://raw.githubusercontent.com/JohnyLeeJohnes/spac/master/install.ps1 | iex"
-```
-
-Stáhne Spáče do `%LOCALAPPDATA%\Spac`, vytvoří zástupce **Spáč** s ikonou v nabídce Start a na ploše
-a rovnou ho otevře. Stejným příkazem později stáhneš aktuální verzi. Co přesně příkaz udělá, si můžeš
-předem přečíst v [install.ps1](install.ps1).
-
-Chceš Spáče mít ve vlastní složce? Stáhni si
-[Spac.zip](https://github.com/JohnyLeeJohnes/spac/releases/latest/download/Spac.zip) z posledního vydání
-a rozbal ho, kam chceš. Chceš ho i upravovat? Naklonuj si repo:
+Stáhni si [Spac.zip](https://github.com/JohnyLeeJohnes/spac/releases/latest/download/Spac.zip) z posledního
+vydání, odblokuj ho (viz níže) a rozbal ho, kam chceš. Chceš Spáče i upravovat? Naklonuj si repo:
 
 ```
 git clone https://github.com/JohnyLeeJohnes/spac.git
@@ -49,9 +38,10 @@ Ve složce se Spáčem pak poklepej na **`install.cmd`**. Vytvoří zástupce **
 na ploše a přímo ve složce. Přes něj se aplikace spouští jako každá jiná, bez okna konzole.
 
 - **Jen vyzkoušet:** poklepej na `Spac.cmd`, spustí Spáče bez vytváření zástupců.
+- **Nová verze:** rozbal nový `Spac.zip` do stejné složky a nech přepsat soubory. V klonu stačí `git pull`.
 - **Přesunutí složky:** zástupce ukazuje tam, kde Spáč leží. Po přesunutí spusť `install.cmd` znovu.
-- **Odebrání:** smaž zástupce z plochy a z nabídky Start a pak celou složku (po instalaci příkazem je
-  to `%LOCALAPPDATA%\Spac`). Nic dalšího Spáč v systému nenechává.
+- **Odebrání:** smaž zástupce z plochy a z nabídky Start a pak celou složku se Spáčem (dřívější instalace
+  jedním příkazem je v `%LOCALAPPDATA%\Spac`). Nic dalšího Spáč v systému nenechává.
 - **Proč zástupce není rovnou v repu:** zástupce si pamatuje celou cestu k ikoně i ke skriptu, takže
   musí vzniknout až na tvém počítači.
 
@@ -91,6 +81,9 @@ Potřebuješ Windows 10 nebo 11 (Windows PowerShell 5.1 je jejich součástí). 
   příkazové řádky.
 - **Proč skript, a ne `.exe`.** Nepodepsaný `.exe` umí Windows 11 (Smart App Control) zablokovat. Skript
   běží bez podpisu a před spuštěním si ho můžeš celý přečíst.
+- **Proč není instalace jedním příkazem.** Příkaz, který skript stáhne z internetu a rovnou ho spustí,
+  hlásí Microsoft Defender jako trojského koně, ať je ve skriptu cokoli. Proto se Spáč instaluje ze ZIPu
+  nebo z klonu.
 
 Naplánované vypnutí jde vždy zrušit i bez aplikace:
 
@@ -107,7 +100,6 @@ Spáč si ukládá jediný soubor, `%LOCALAPPDATA%\Spac\pending`, a to jen po do
 | `Spac.ps1` | Chování: skládání přepínačů, volání `shutdown.exe`, odpočet, vytvoření zástupců. |
 | `Spac.xaml` | Vzhled okna: barvy, styly, rozložení. |
 | `Spac.cmd`, `install.cmd` | Spuštění bez instalace a vytvoření zástupců. |
-| `install.ps1` | Instalace jedním příkazem: stáhne Spáče do `%LOCALAPPDATA%\Spac` a vytvoří zástupce. |
 
 Chceš jiné barvy? Celá paleta je na začátku `Spac.xaml`. Jiné předvolby času? Řádek s `Presets` tamtéž,
 hodnota `Tag` je počet minut. Změny se projeví při dalším spuštění, nic se nesestavuje.
@@ -125,7 +117,6 @@ Forkuj, upravuj, posílej pull requesty. Přehled změn je v
 
 **In English:** Spáč ("the sleeper") is a tiny shutdown timer for Windows 10/11, a friendly UI on top of
 `shutdown.exe`. Pick an action (shut down, restart, hibernate, log off), pick a delay, and it runs the
-matching command and shows you exactly which one. It is a PowerShell script with a WPF window: run the
-one-line installer above, or download
+matching command and shows you exactly which one. It is a PowerShell script with a WPF window: download
 [Spac.zip](https://github.com/JohnyLeeJohnes/spac/releases/latest/download/Spac.zip) (or clone the repo)
 and run `install.cmd` to get a shortcut. Nothing to compile. The interface is in Czech.
