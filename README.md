@@ -27,6 +27,18 @@ co přesně spouští.
 
 ## Instalace
 
+Nejrychleji jedním příkazem. Vlož ho do PowerShellu nebo do okna Spustit (<kbd>Win</kbd>+<kbd>R</kbd>):
+
+```
+powershell -c "irm https://raw.githubusercontent.com/JohnyLeeJohnes/spac/master/install.ps1 | iex"
+```
+
+Stáhne Spáče do `%LOCALAPPDATA%\Spac`, vytvoří zástupce **Spáč** s ikonou v nabídce Start a na ploše
+a rovnou ho otevře. Stejným příkazem později stáhneš aktuální verzi. Co přesně příkaz udělá, si můžeš
+předem přečíst v [install.ps1](install.ps1).
+
+Chceš Spáče mít ve vlastní složce nebo ho upravovat? Naklonuj si repo:
+
 ```
 git clone https://github.com/JohnyLeeJohnes/spac.git
 ```
@@ -36,8 +48,8 @@ na ploše a přímo ve složce. Přes něj se aplikace spouští jako každá ji
 
 - **Jen vyzkoušet:** poklepej na `Spac.cmd`, spustí Spáče bez vytváření zástupců.
 - **Přesunutí složky:** zástupce ukazuje tam, kde Spáč leží. Po přesunutí spusť `install.cmd` znovu.
-- **Odebrání:** smaž zástupce z plochy a z nabídky Start a pak celou složku. Nic dalšího Spáč v systému
-  nenechává.
+- **Odebrání:** smaž zástupce z plochy a z nabídky Start a pak celou složku (po instalaci příkazem je
+  to `%LOCALAPPDATA%\Spac`). Nic dalšího Spáč v systému nenechává.
 - **Proč zástupce není rovnou v repu:** zástupce si pamatuje celou cestu k ikoně i ke skriptu, takže
   musí vzniknout až na tvém počítači.
 
@@ -93,6 +105,7 @@ Spáč si ukládá jediný soubor, `%LOCALAPPDATA%\Spac\pending`, a to jen po do
 | `Spac.ps1` | Chování: skládání přepínačů, volání `shutdown.exe`, odpočet, vytvoření zástupců. |
 | `Spac.xaml` | Vzhled okna: barvy, styly, rozložení. |
 | `Spac.cmd`, `install.cmd` | Spuštění bez instalace a vytvoření zástupců. |
+| `install.ps1` | Instalace jedním příkazem: stáhne Spáče do `%LOCALAPPDATA%\Spac` a vytvoří zástupce. |
 | `tools/make-icon.ps1` | Vygeneruje ikonu do `assets/`. |
 | `tests/e2e.ps1` | Test, který aplikaci proklikne přes UI Automation. |
 
@@ -120,5 +133,6 @@ Forkuj, upravuj, posílej pull requesty. Změny se zapisují do [CHANGELOG.md](C
 
 **In English:** Spáč ("the sleeper") is a tiny shutdown timer for Windows 10/11, a friendly UI on top of
 `shutdown.exe`. Pick an action (shut down, restart, hibernate, log off), pick a delay, and it runs the
-matching command and shows you exactly which one. It is a PowerShell script with a WPF window: clone the
-repo and run `install.cmd` to get a shortcut, nothing to compile or install. The interface is in Czech.
+matching command and shows you exactly which one. It is a PowerShell script with a WPF window: run the
+one-line installer above, or clone the repo and run `install.cmd` to get a shortcut. Nothing to compile.
+The interface is in Czech.
