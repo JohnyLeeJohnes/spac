@@ -33,16 +33,25 @@ if ($Install) {
 
 Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase, Microsoft.VisualBasic
 
-# Dvě volání Windows API. Když se Add-Type nepovede (třeba kvůli zásadám počítače), Spáč běží dál,
-# jen má světlý titulek a nepozná, že je hibernace vypnutá.
+# Tři volání Windows API. Typ se skládá za běhu, ne přes Add-Type s kódem v C#: ten by kvůli nim pouštěl
+# kompilátor a start by se o znatelný kus protáhl. Když se to nepovede (třeba kvůli zásadám počítače), Spáč
+# běží dál, jen má světlý titulek, nepozná, že je hibernace vypnutá, a na hlavním panelu má ikonu PowerShellu.
 $native = $null
 try {
-    $native = Add-Type -Namespace Spac -Name Native -PassThru -MemberDefinition @'
-[DllImport("dwmapi.dll")]
-public static extern int DwmSetWindowAttribute(IntPtr hwnd, int attribute, ref int value, int size);
-[DllImport("powrprof.dll")] [return: MarshalAs(UnmanagedType.U1)]
-public static extern bool IsPwrHibernateAllowed();
-'@
+    $assembly = [AppDomain]::CurrentDomain.DefineDynamicAssembly((New-Object Reflection.AssemblyName 'SpacNative'), 'Run')
+    $type = $assembly.DefineDynamicModule('SpacNative').DefineType('Spac.Native', 'Public, Class')
+    # Knihovna, funkce, co vrací, parametry. IsPwrHibernateAllowed vrací BOOLEAN, tedy jeden bajt.
+    $imports = @('dwmapi.dll', 'DwmSetWindowAttribute', [int], @([IntPtr], [int], [int].MakeByRefType(), [int])),
+        @('powrprof.dll', 'IsPwrHibernateAllowed', [byte], @()),
+        @('shell32.dll', 'SetCurrentProcessExplicitAppUserModelID', [int], @([string]))
+    foreach ($import in $imports) {
+        $method = $type.DefinePInvokeMethod($import[1], $import[0], 'Public, Static, PinvokeImpl', 'Standard', $import[2], [Type[]]$import[3], 'Winapi', 'Unicode')
+        $method.SetImplementationFlags('PreserveSig')
+    }
+    $native = $type.CreateType()
+    # Okno hostí powershell.exe, takže by ho Windows na hlavním panelu přiřadily k PowerShellu a ukázaly jeho
+    # ikonu. S vlastním označením je Spáč na panelu sám za sebe a s ikonou svého okna.
+    $null = $native::SetCurrentProcessExplicitAppUserModelID('JohnyLeeJohnes.Spac')
 } catch { }
 
 # Návratové kódy shutdown.exe
@@ -270,25 +279,28 @@ try {
     'StatusText', 'AbortButton', 'GatewayButton', 'RunView', 'RunTitle', 'CountdownText', 'RunWhen', 'BarLeft', 'BarGone',
     'RunCommand', 'CancelButton', 'RunStatus' | ForEach-Object { $ui[$_] = $window.FindName($_) }
 
-    # Když Spáče pustila Bránocesta, nechala v $env:BRANOCESTA cestu ke svému skriptu. Tlačítko ji otevře
-    # a Spáče zavře. Při spuštění vlastním zástupcem proměnná není a tlačítko zůstane schované.
+    # Když Spáče pustila Bránocesta, nechala v $env:BRANOCESTA cestu ke svému skriptu a v $env:BRANOCESTA_PID
+    # číslo svého procesu. Tlačítko bránu vrátí a Spáče zavře. Při spuštění vlastním zástupcem proměnné nejsou
+    # a tlačítko zůstane schované.
     $gateway = $env:BRANOCESTA
     if ($gateway -and (Split-Path $gateway -Leaf) -eq 'Branocesta.ps1' -and (Test-Path -LiteralPath $gateway)) {
         # Spáč se zavře, až když se okno brány ukáže, a pošle ho dopředu. Kdyby se zavřel hned, Windows by
-        # mezitím aktivovaly jiné okno a brána by se otevřela za ním. $handoff.Tag drží čas kliknutí.
+        # mezitím aktivovaly jiné okno a brána by se otevřela za ním.
+        # $handoff.Tag = @{ Since = čas kliknutí; Called = proces brány, která se nechala zavolat, jinak 0 }
         $handoff = [Windows.Threading.DispatcherTimer]::new()
-        $handoff.Interval = [TimeSpan]::FromMilliseconds(150)
+        $handoff.Interval = [TimeSpan]::FromMilliseconds(50)
         $handoff.Add_Tick({
             $shown = $null
             foreach ($process in [Diagnostics.Process]::GetProcessesByName('powershell')) {
                 try {
-                    if ($process.Id -ne $PID -and $process.StartTime -ge $handoff.Tag -and
-                        $process.MainWindowHandle -ne [IntPtr]::Zero) { $shown = $process.Id }
+                    # Zavolaná brána běžela už před kliknutím, nově otevřená vznikla až po něm.
+                    if ($process.Id -ne $PID -and $process.MainWindowHandle -ne [IntPtr]::Zero -and
+                        ($process.Id -eq $handoff.Tag.Called -or $process.StartTime -ge $handoff.Tag.Since)) { $shown = $process.Id }
                 }
                 catch { }   # Proces mezitím skončil nebo k němu není přístup.
                 finally { $process.Dispose() }
             }
-            if (-not $shown -and [DateTime]::Now -lt $handoff.Tag.AddSeconds(20)) { return }
+            if (-not $shown -and [DateTime]::Now -lt $handoff.Tag.Since.AddSeconds(20)) { return }
             $handoff.Stop()
             # Když se brána neukázala, Spáč zůstane otevřený, ať člověk neskončí bez okna.
             if (-not $shown) { return }
@@ -298,10 +310,19 @@ try {
         $ui.GatewayButton.Visibility = 'Visible'
         $ui.GatewayButton.Add_Click({
             if ($handoff.IsEnabled) { return }
-            $handoff.Tag = [DateTime]::Now
-            # conhost --headless spustí PowerShell bez okna konzole, stejně jako zástupce.
-            Start-Process -FilePath "$env:SystemRoot\System32\conhost.exe" -WorkingDirectory (Split-Path $gateway) `
-                -ArgumentList "--headless powershell.exe -NoProfile -ExecutionPolicy Bypass -File `"$gateway`""
+            $handoff.Tag = @{ Since = [DateTime]::Now; Called = 0 }
+            # Brána od verze 1.5.0 se za Spáčem nezavírá, jen se schová a čeká na událost Branocesta.<PID>.
+            # Stačí ji zavolat a je zpátky hned, protože se nic nestartuje.
+            try {
+                $signal = [Threading.EventWaitHandle]::OpenExisting("Branocesta.$env:BRANOCESTA_PID")
+                if ($signal.Set()) { $handoff.Tag.Called = [int]$env:BRANOCESTA_PID }
+                $signal.Dispose()
+            } catch { }   # Událost není: brána je starší nebo už neběží.
+            if (-not $handoff.Tag.Called) {
+                # conhost --headless spustí PowerShell bez okna konzole, stejně jako zástupce.
+                Start-Process -FilePath "$env:SystemRoot\System32\conhost.exe" -WorkingDirectory (Split-Path $gateway) `
+                    -ArgumentList "--headless powershell.exe -NoProfile -ExecutionPolicy Bypass -File `"$gateway`""
+            }
             $handoff.Start()
         })
     }
